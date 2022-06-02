@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-var ip ="http://172.19.120.128:8080/static/"
+var ip ="http://0.0.0.0:8080/static/"
 
 func Publish(c *gin.Context) {
 	token := c.PostForm("token")
