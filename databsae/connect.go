@@ -31,7 +31,7 @@ func Connect()*gorm.DB {
 	// SetConnMaxLifetime 设置了连接可复用的最大时间。
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	db.AutoMigrate(&User{})
+	db.AutoMigrate(&User{},&Video{})
 
 	return db
 

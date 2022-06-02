@@ -12,17 +12,28 @@ type User struct {
 }
 //检索容器
 type UserInfo struct {
-	Id   uint  `json:"user_id,omitempty"`
+	Id   int64  `json:"user_id,omitempty"`
 	Name  string `json:"name,omitempty"`
-	Password string `json:"password,omitempty"`
 }
 
 //视频对象
 type Video struct {
 	gorm.Model
-	Author        User   `json:"author"`
-	PlayUrl       string `json:"play_url" json:"play_url,omitempty"`
+	AuthorId      int64
+	Author        User   `json:"author" gorm:"foreignKey:AuthorId"`
+	PlayUrl       string `json:"play_url,omitempty"`
 	CoverUrl      string `json:"cover_url,omitempty"`
+	Title         string `json:"title,omitempty"`
+	FavoriteCount int64  `json:"favorite_count,omitempty"`
+	CommentCount  int64  `json:"comment_count,omitempty"`
+}
+
+type VideoInfo struct {
+	Id            int64  `json:"id,omitempty"`
+	Author        UserInfo   `json:"author"`
+	PlayUrl       string `json:"play_url,omitempty"`
+	CoverUrl      string `json:"cover_url,omitempty"`
+	Title         string `json:"title,omitempty"`
 	FavoriteCount int64  `json:"favorite_count,omitempty"`
 	CommentCount  int64  `json:"comment_count,omitempty"`
 	IsFavorite    bool   `json:"is_favorite,omitempty"`
