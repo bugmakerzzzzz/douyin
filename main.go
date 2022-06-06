@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"douyin/databsae"
 	"github.com/gin-gonic/gin"

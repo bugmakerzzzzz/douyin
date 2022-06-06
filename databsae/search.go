@@ -2,7 +2,7 @@ package databsae
 
 func UserLogin(name,password string)(user User,err string) {
 	u:=User{}
-	res:=D.Select("password","name","id").Where("name = ?",name).First(&u)
+	res:=D.Where("name = ?",name).First(&u)
 	if res.Error!=nil{
 		return u,res.Error.Error()
 	}else if u.Password!=password{
@@ -11,11 +11,13 @@ func UserLogin(name,password string)(user User,err string) {
 	return u,""
 }
 
-func SearchUserInfo(id int64) (userInfo UserInfo,err string) {
+
+//根据id获取用户信息
+func SearchUserInfo(id int64) (userInfo UserInfo,err error) {
 	u:=UserInfo{}
-	res:=D.Model(&User{}).First(&u,id)
+	res:=D.First(&u,id)
 	if res.Error!=nil{
-		return u,res.Error.Error()
+		return u,res.Error
 	}
-	return u,""
+	return u,nil
 }

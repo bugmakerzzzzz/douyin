@@ -18,16 +18,31 @@ type UserLoginResponse struct {
 //用户信息
 type UserInfoResponse struct {
 	Response
-	User databsae.UserInfo
+	User databsae.UserInfo `json:"user,omitempty"`
 }
 
 type FeedResponse struct {
 	Response
-	VideoList []databsae.VideoInfo `json:"video_list,omitempty"`
+	VideoList []databsae.Video `json:"video_list,omitempty"`
 	NextTime  int64   `json:"next_time,omitempty"`
 }
 
 type VideoListResponse struct {
 	Response
-	VideoList []databsae.VideoInfo `json:"video_list"`
+	VideoList []databsae.Video `json:"video_list"`
+}
+
+type CommentListResponse struct {
+	Response
+	CommentList []databsae.Comment `json:"comment_list,omitempty"`
+}
+
+type CommentActionResponse struct {
+	Response
+	Comment databsae.Comment `json:"comment,omitempty"`
+}
+
+type UserListResponse struct {
+	Response
+	UserList []databsae.UserInfo `json:"user_list"`
 }

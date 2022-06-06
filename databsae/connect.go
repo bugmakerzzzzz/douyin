@@ -9,7 +9,7 @@ import (
 var D *gorm.DB
 func Connect()*gorm.DB {
 	db, _ := gorm.Open(mysql.New(mysql.Config{
-		DSN: "user:password@tcp(127.0.0.1:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local", // DSN data source name
+		DSN: "bugmaker:2982@tcp(127.0.0.1:3306)/douyin?charset=utf8mb4&parseTime=True&loc=Local", // DSN data source name
 		DefaultStringSize: 191, // string 类型字段的默认长度 uft8为255 utf8mb4为191
 		//DisableDatetimePrecision: true, // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
 		//DontSupportRenameIndex: true, // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
@@ -31,7 +31,7 @@ func Connect()*gorm.DB {
 	// SetConnMaxLifetime 设置了连接可复用的最大时间。
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
-	db.AutoMigrate(&User{},&Video{})
+	db.AutoMigrate(&User{},&Video{},&FavoriteRelationship{},&UserInfo{},&Comment{},&FollowRelationship{})
 
 	return db
 

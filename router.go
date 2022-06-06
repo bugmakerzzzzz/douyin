@@ -19,4 +19,10 @@ func initRouter(r *gin.Engine) {
 	apiRouter.GET("/feed/", utils.Feed)
 	apiRouter.POST("/publish/action/", utils.Publish)
 	apiRouter.GET("/publish/list/", utils.PublishList)
+
+	// extra apis - I
+	apiRouter.POST("/favorite/action/", utils.FavoriteAction)
+	apiRouter.GET("/favorite/list/", utils.FavoriteList)
+	apiRouter.POST("/comment/action/", utils.CommentAction)
+	apiRouter.GET("/comment/list/", utils.CommentList)
 }
