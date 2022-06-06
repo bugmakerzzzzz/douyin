@@ -50,7 +50,8 @@ func FavoriteList(c *gin.Context){
 	userID:=c.Query("user_id")
 
 	//用户鉴权
-	if _, exist := usersLoginInfo[token]; !exist {
+	uid, exist := usersLoginInfo[token]
+	if !exist {
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't login"})
 		return
 	}
@@ -63,6 +64,27 @@ func FavoriteList(c *gin.Context){
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: err.Error()})
 		return
 	}
+
+	follow:=make(map[int64]bool)
+	//获取关注数据
+	f:=[]databsae.FollowRelationship{}
+	if res:=databsae.D.Where("follower_id = ?",uid).Find(&f);res.Error!=nil{
+		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: res.Error.Error()})
+		return
+	}
+	//更新map
+	for _,v:=range f{
+		follow[v.FollowId]=true
+	}
+	//更新字段
+	for k:=range videos{
+		//更新关注
+		if _,exist:=follow[videos[k].Author.ID];exist{
+			videos[k].Author.IsFollow=true
+		}
+
+	}
+
 	c.JSON(http.StatusOK, VideoListResponse{
 		Response: Response{
 			StatusCode: 0,

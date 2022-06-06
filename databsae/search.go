@@ -19,5 +19,6 @@ func SearchUserInfo(id int64) (userInfo UserInfo,err error) {
 	if res.Error!=nil{
 		return u,res.Error
 	}
+
 	return u,nil
 }

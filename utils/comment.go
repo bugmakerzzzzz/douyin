@@ -50,7 +50,8 @@ func CommentList(c *gin.Context) {
 	videoID:=c.Query("video_id")
 
 	//用户鉴权
-	if _, exist := usersLoginInfo[token]; !exist{
+	uid, exist := usersLoginInfo[token]
+	if  !exist{
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 		return
 	}
@@ -62,6 +63,26 @@ func CommentList(c *gin.Context) {
 	if res:=databsae.D.Order("created_at desc").Preload("User").Select("id","user_id","content","date").Find(&comments,"video_id = ?",videoID);res.Error!=nil{
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: res.Error.Error()})
 		return
+	}
+
+	follow:=make(map[int64]bool)
+	//获取关注数据
+	f:=[]databsae.FollowRelationship{}
+	if res:=databsae.D.Where("follower_id = ?",uid).Find(&f);res.Error!=nil{
+		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: res.Error.Error()})
+		return
+	}
+	//更新map
+	for _,v:=range f{
+		follow[v.FollowId]=true
+	}
+
+	for k:=range comments{
+		//更新关注
+		if _,exist:=follow[comments[k].UserID];exist{
+			comments[k].User.IsFollow=true
+		}
+
 	}
 
 	c.JSON(http.StatusOK, CommentListResponse{

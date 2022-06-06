@@ -69,7 +69,8 @@ func PublishList(c *gin.Context) {
 	id:=c.Query("user_id")
 
 	//用户鉴权
-	if _, exist := usersLoginInfo[token]; !exist {
+	uid, exist := usersLoginInfo[token]
+	if  !exist {
 		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 		return
 	}
@@ -90,6 +91,19 @@ func PublishList(c *gin.Context) {
 		favorite[v.VideoId]=true
 	}
 
+
+	follow:=make(map[int64]bool)
+	//获取关注数据
+	f:=[]databsae.FollowRelationship{}
+	if res:=databsae.D.Where("follower_id = ?",uid).Find(&f);res.Error!=nil{
+		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: res.Error.Error()})
+		return
+	}
+	//更新map
+	for _,v:=range f{
+		follow[v.FollowId]=true
+	}
+
 	//查询视频数据，预加载用户
 	res:=databsae.D.Order("created_at desc").Preload("Author").Find(&videos,"author_id = ?",id)
 	if res.Error!=nil{
@@ -101,7 +115,11 @@ func PublishList(c *gin.Context) {
 		//更新点赞数据
 		if _,exist:=favorite[videos[k].ID];exist{
 			videos[k].IsFavorite=true
+		}//更新关注
+		if _,exist:=follow[videos[k].Author.ID];exist{
+			videos[k].Author.IsFollow=true
 		}
+
 	}
 
 	//返回数据

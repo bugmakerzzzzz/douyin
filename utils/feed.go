@@ -23,16 +23,29 @@ func Feed(c *gin.Context) {
 
 	//用于判断是否favorite
 	favorite:=make(map[int64]bool)
+	//判断是否follow
+	follow:=make(map[int64]bool)
 	//获取点赞关系表，填充map容器
 	if userID,exist:=usersLoginInfo[token];exist{
 		r:=[]databsae.FavoriteRelationship{}
 		//获取关系表
 		if res:=databsae.D.Where("user_id = ?",userID).Find(&r);res.Error!=nil{
 			c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: res.Error.Error()})
+			return
 		}
 		//添加map内容
 		for _,v:=range r{
 			favorite[v.VideoId]=true
+		}
+		//获取关注数据
+		f:=[]databsae.FollowRelationship{}
+		if res:=databsae.D.Where("follower_id = ?",userID).Find(&f);res.Error!=nil{
+			c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: res.Error.Error()})
+			return
+		}
+		//更新map
+		for _,v:=range f{
+			follow[v.FollowId]=true
 		}
 	}
 
@@ -44,6 +57,10 @@ func Feed(c *gin.Context) {
 		//更新点赞数据
 		if _,exist:=favorite[videos[k].ID];exist{
 			videos[k].IsFavorite=true
+		}
+		//更新关注
+		if _,exist:=follow[videos[k].Author.ID];exist{
+			videos[k].Author.IsFollow=true
 		}
 	}
 
