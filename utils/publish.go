@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 )
 
-var ip ="http://172.19.120.128:8080/static/"
+var ip ="http://8.142.191.60:5000/static/"
 
 func Publish(c *gin.Context) {
 	//获取token，标题

@@ -14,7 +14,7 @@ func Feed(c *gin.Context) {
 	token:=c.Query("token")
 	timeUnix,_:=strconv.ParseInt(timeUnixstr, 10, 64)
 	//判断时间为空，填充为当前时间
-	if timeUnixstr=="0"{
+	if timeUnixstr=="0" || timeUnixstr==""{
 		timeUnix=time.Now().Unix()
 	}
 

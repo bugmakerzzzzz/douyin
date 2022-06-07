@@ -51,10 +51,6 @@ func CommentList(c *gin.Context) {
 
 	//用户鉴权
 	uid, exist := usersLoginInfo[token]
-	if  !exist{
-		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
-		return
-	}
 
 	//创建评论实例
 	comments:=[]databsae.Comment{}
@@ -65,25 +61,28 @@ func CommentList(c *gin.Context) {
 		return
 	}
 
-	follow:=make(map[int64]bool)
-	//获取关注数据
-	f:=[]databsae.FollowRelationship{}
-	if res:=databsae.D.Where("follower_id = ?",uid).Find(&f);res.Error!=nil{
-		c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: res.Error.Error()})
-		return
-	}
-	//更新map
-	for _,v:=range f{
-		follow[v.FollowId]=true
-	}
-
-	for k:=range comments{
-		//更新关注
-		if _,exist:=follow[comments[k].UserID];exist{
-			comments[k].User.IsFollow=true
+	if exist{
+		follow:=make(map[int64]bool)
+		//获取关注数据
+		f:=[]databsae.FollowRelationship{}
+		if res:=databsae.D.Where("follower_id = ?",uid).Find(&f);res.Error!=nil{
+			c.JSON(http.StatusOK, Response{StatusCode: 1, StatusMsg: res.Error.Error()})
+			return
+		}
+		//更新map
+		for _,v:=range f{
+			follow[v.FollowId]=true
 		}
 
+		for k:=range comments{
+			//更新关注
+			if _,exist:=follow[comments[k].UserID];exist{
+				comments[k].User.IsFollow=true
+			}
+
+		}
 	}
+
 
 	c.JSON(http.StatusOK, CommentListResponse{
 		Response:    Response{StatusCode: 0},
